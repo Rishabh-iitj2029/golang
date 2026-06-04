@@ -14,4 +14,8 @@ func main() {
 	fmt.Println("The fruitList is ", fruitList)
 	fmt.Println("The fruitList is ", len(fruitList))
 
+	var vegList = [3]string{"Brinjal", "Cabbage","Peas"}
+	fmt.Println("The veggies are => ", vegList)
+
+
 }
