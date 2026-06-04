@@ -2,7 +2,8 @@ package main
 
 import "fmt"
 
-jwtToken := 6514654981
+var jwtToken int = 6514654981
+const RefreshToken string = "awbwerywrsr7426947greg" 
 
 func main() {
 	var username string = "Rishabh"
@@ -34,4 +35,9 @@ func main() {
 
 	numberOfUser := 4578
 	fmt.Println(numberOfUser)
+	fmt.Println(jwtToken)
+
+
+	fmt.Println(RefreshToken)
+	fmt.Printf("The type of variable is %T\n", RefreshToken)
 }
