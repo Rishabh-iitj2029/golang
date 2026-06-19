@@ -15,6 +15,7 @@ class Agent:
         self.validity = validity
 
 agent_database:List[Agent] = []
+agent_database.append(Agent("4577","done",45))
 agent_database.append(Agent("4578","done",45))
 
 
@@ -28,6 +29,7 @@ async def handle_research(agentId:str, request:Request):
             break
 
     if not isRegistered:
+        print("Agent is not registered")
         return{
             "message":"Payment required, you are not registered in my server",
             "ToPay":"700Rs"
