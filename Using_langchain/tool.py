@@ -53,7 +53,11 @@ def run_agent(user_prompt:str):
                     tool_call_id=tool_id
                 )
             )
+        
+    if not res.tool_calls:
+        print(f"Agent answer is => {res.content}")
 
 run_agent("what is current exchange rate between USD and EUR")
 print("\n-----------------------------------------------------------------------------------------------------------------------------------")
 run_agent("research about the blockchain network, my agent id is 4578")
+run_agent("How is day going")
