@@ -5,6 +5,20 @@ import httpx
 import requests
 import config
 from langchain_core.messages import HumanMessage, BaseMessage,ToolMessage
+import datetime
+
+
+# creating a fake payment valut as paymentWallet.txt for the agent which will be used to pay and get the data and in future handle by our daemon layer 
+DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
+now = datetime.datetime.now()
+
+# with open("paymentWallet.txt", "r", encoding="utf-8") as file:
+#     all_lines = file.readlines()
+
+# with open("paymentWallet.txt", "w", encoding="utf-8") as file:
+#     file.write("450\n")
+#     file.write(now.strftime(DATE_FORMAT))
+
 
 @tool(description="finds out the latest exchange rates")
 def exchange_rate(base:str, quotes:str):
@@ -15,12 +29,32 @@ def exchange_rate(base:str, quotes:str):
 
 
 @tool(description="for making reasearch")
-def make_research(agentId:str,msg:str):
-    apiUrl = f"http://127.0.0.1:8000/api/v1/research/{agentId}"
+def make_research(msg:str):
+    apiUrl = f"http://127.0.0.1:8000/api/v1/research/"
     body_data = {"service":msg}
 
-    res = requests.get(apiUrl,json=body_data)
-    return res.json()
+
+    while True:
+        res = requests.get(apiUrl,json=body_data)
+        
+        if(res.json()["status"] == 402):
+            with open("paymentWallet.txt", "r", encoding="utf-8") as file:
+                all_lines = file.readlines()
+                print(res.json()["message"])
+                print("Making the payment....")
+                if(float(res.json()["ToPay"]) <= float(all_lines[0][:-1])):
+                    with open("paymentWallet.txt", "w", encoding="utf-8") as file:
+                        file.write(str(float(all_lines[0][:-1])-float(res.json()["ToPay"]))+"\n")
+                        file.write(now.strftime(DATE_FORMAT))
+                        print("Payment Done")
+
+
+                else:
+                    return "Agent do not have required balance to request the service !!!"
+        else:
+            return res.json()
+
+    
     
 
 llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0)
@@ -57,7 +91,7 @@ def run_agent(user_prompt:str):
     if not res.tool_calls:
         print(f"Agent answer is => {res.content}")
 
-run_agent("what is current exchange rate between USD and EUR")
-print("\n-----------------------------------------------------------------------------------------------------------------------------------")
-run_agent("research about the blockchain network, my agent id is 4578")
-run_agent("How is day going")
+# run_agent("what is current exchange rate between USD and EUR")
+# print("\n-----------------------------------------------------------------------------------------------------------------------------------")
+run_agent("research about the computer network")
+# run_agent("How is day going")
